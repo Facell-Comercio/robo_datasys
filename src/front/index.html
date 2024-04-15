@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robô Facell - Datasys</title>
+
+    <link rel="stylesheet" href="./css/bootstrap/css/bootstrap.min.css" />
+  </head>
+  <body class="bg-dark text-secondary overflow-hidden" style="max-height: 100vh; height: 100%;">
+    <!-- Div principal -->
+    <div class="d-flex">
+      <!-- Primeira coluna -->
+      <div class="d-flex flex-column gap-2 p-3">
+        <label for="">Credenciais Datasys</label>
+        <!-- CPF -->
+        <div class="input-group">
+          <span class="input-group-text">CPF</span>
+          <input id="cpf" type="text" class="form-control form-control-sm" placeholder="00000000000" aria-label="cpf" aria-describedby="basic-addon1" />
+        </div>
+
+        <!-- SENHA -->
+        <div class="input-group">
+          <span class="input-group-text">Senha</span>
+          <input id="senha" type="password" class="form-control form-control-sm" placeholder="senha" aria-label="senha" aria-describedby="basic-addon1" />
+        </div>
+
+        <!-- EMPRESA -->
+        <div class="input-group">
+          <span class="input-group-text">Empresa</span>
+          <select id="empresa" class="form-select form-select-sm">
+              <option value="FACELLRN">FACELLRN</option>
+              <option value="FORTTELECOM">FORTTELECOM</option>
+          </select>
+        </div>
+
+        <div class="d-flex flex-column mt-3">
+          <a target="_blank" href="https://docs.google.com/uc?export=download&id=1kSK7gSlS9hoVaiiK5DxYgkt-3XLTTeCE">Planilha padrão</a>
+          <span id="infoQtdeCaixas" class="fw-bold text-white"></span>
+        </div>
+
+        <button id="btnImportar" class="btn btn-warning">Importar Planilha</button>
+
+        <button id="btnResetar" class="d-none w-full btn btn-secondary">Resetar</button>
+        <button id="btnIniciar" class="d-none w-full btn btn-primary">Iniciar</button>
+        <button id="btnFinalizar" class="d-none btn btn-danger">Finalizar</button>
+        <button id="btnExportar" class="d-none btn btn-success">Exportar Resultado</button>
+      </div>
+
+      <!-- Segunda coluna -->
+      <div class="p-3 d-flex flex-column w-75 gap-3">
+        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuemax="100">
+            <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold"></div>
+          </div>
+
+        <div class="flex-1">
+            <div class="fs-6">
+                Histórico
+            </div>
+            <div id="historico" class="overflow-auto flex-1 flex flex-column gap-1 p-2" style="height: 80vh; background-color: #151719;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="./css/bootstrap/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/renderer.js"></script>
+  </body>
+</html>

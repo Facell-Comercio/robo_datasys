@@ -1,0 +1,40 @@
+{
+  "name": "robo_datasys",
+  "productName": "Robo_Datasys_Facell",
+  "version": "1.1.1",
+  "description": "Robô de automação Datasys",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "watch": "nodemon --exec electron .",
+    "dist": "electron-builder --w"
+  },
+  "type": "module",
+  "author": "Alex Bezerra",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "puppeteer-real-browser": "^1.2.11",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^29.2.0",
+    "electron-builder": "^24.13.3",
+    "nodemon": "^3.1.0"
+  },
+  "extraResources": [
+    "facell.ico"
+  ],
+  "build": {
+    "asar": false,
+    "win": {
+      "target": "nsis",
+      "icon": "facell.ico"
+    },
+    "target": "NSIS",
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
+  }
+}
