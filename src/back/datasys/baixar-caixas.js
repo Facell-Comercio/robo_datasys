@@ -9,8 +9,9 @@ export const baixarCaixas = ({
 }) => {
     return new Promise(async (resolve, reject) => {
         try {
+            await page.setDefaultNavigationTimeout(cincoMinutos);
             await page.goto('https://tim.datasys.online/Geral/NovosModulos.aspx', { waitUntil: 'domcontentloaded' })
-            const btnModuloFinanceiro = await page.waitForSelector('#lkFinanceiro', {timeout: 0})
+            const btnModuloFinanceiro = await page.waitForSelector('#lkFinanceiro', { timeout: cincoMinutos })
             await btnModuloFinanceiro.click()
             await page.waitForNavigation()
 
@@ -22,8 +23,8 @@ export const baixarCaixas = ({
                 await delay(1000)
                 try {
                     await navegarParaListaCaixas({ page, caixa })
-                } catch (error) {
-                    caixa.message = error.message
+                } catch (messageErro) {
+                    caixa.message = 'Não consegui realizar a navegação: ' + messageErro
                     continue
                 }
 
@@ -61,14 +62,14 @@ export const baixarCaixas = ({
                         // Realizar o depósito
                         await realizarDeposito({ page, caixa })
                     } catch (error) {
-                        caixa.message = 'Não consegui realizar o depósito: '+error.message
+                        caixa.message = 'Não consegui realizar o depósito: ' + error.message
                         continue
                     }
                     await delay(500)
                     try {
                         await navegarParaListaCaixas({ page, caixa })
-                    } catch (error) {
-                        caixa.message = 'Não consegui navegar para a lista de caixas: '+error.message
+                    } catch (messageErro) {
+                        caixa.message = 'Não consegui navegar para a lista de caixas: ' + messageErro
                         continue
                     }
                     await delay(200)
@@ -101,70 +102,67 @@ export const baixarCaixas = ({
         }
     })
 }
-function modelo({
-    page, caixa
-}) {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            await delay(1000)
-
-            resolve()
-        } catch (error) {
-            reject(error)
-        }
-    })
-}
 
 function navegarParaListaCaixas({
     page, caixa
 }) {
     return new Promise(async (resolve, reject) => {
-        try {
-            await page.goto('https://newadm-tim.datasys.online/View/Financeiro/ControleCaixa/ConfirmacaoCaixa.aspx', { waitUntil: 'domcontentloaded' })
-            await delay(300)
-            
-            // Exibir 100 filiais
-            await page.select('.dataTables_length select', '100');
+        let tentativas = 5;
+        let erro = null;
 
-            await delay(300)
-            // Procurar a filial
-            await page.$$eval('.dataTables_wrapper table tbody tr', (rows, filial) => {
-                for (const row of rows) {
-                    const columns = row.querySelectorAll('td');
-                    const nome = columns[1].innerText.trim(); // Segunda coluna
-                    const button = columns[0].querySelector('a.btn'); // Primeira coluna
-                    if (nome === filial) {
-                        button.click(); // Clique no botão
-                        break
+        while (tentativas > 0) {
+            try {
+                await page.goto('https://newadm-tim.datasys.online/View/Financeiro/ControleCaixa/ConfirmacaoCaixa.aspx', { waitUntil: 'domcontentloaded' })
+
+                await delay(500)
+
+                // Exibir 100 filiais
+                await page.select('.dataTables_length select', '100');
+
+                await delay(300)
+                // Procurar a filial
+                await page.$$eval('.dataTables_wrapper table tbody tr', (rows, filial) => {
+                    for (const row of rows) {
+                        const columns = row.querySelectorAll('td');
+                        const nome = columns[1].innerText.trim(); // Segunda coluna
+                        const button = columns[0].querySelector('a.btn'); // Primeira coluna
+                        if (nome === filial) {
+                            button.click(); // Clique no botão
+                            break
+                        }
                     }
+                }, caixa.filial)
+
+                await page.waitForSelector("#ctl00_body_divLista2 .dataTables_wrapper table tbody tr:first-child td:nth-child(2)", { timeout: cincoMinutos })
+                // Validar se a Data Caixa bate com a Data que consta no Objeto
+                const dataNaTabela = await page.evaluate(() => {
+                    const td = document.querySelector("#ctl00_body_divLista2 .dataTables_wrapper table tbody tr:first-child td:nth-child(2)")
+                    return td ? td.textContent?.trim() : null;
+                })
+
+                const data_caixa = format(caixa.data_caixa, 'dd/MM/yyyy')
+                if (dataNaTabela !== data_caixa) {
+                    // Datas não bateram...
+                    erro = `A Data ${data_caixa} na planilha, não bateu com a Data Caixa ${dataNaTabela} no Datasys.`
+                    break
                 }
-            }, caixa.filial)
 
-            await page.waitForSelector("#ctl00_body_divLista2 .dataTables_wrapper table tbody tr:first-child td:nth-child(2)", {timeout: 0})
-            // Validar se a Data Caixa bate com a Data que consta no Objeto
-            const dataNaTabela = await page.evaluate(() => {
-                const td = document.querySelector("#ctl00_body_divLista2 .dataTables_wrapper table tbody tr:first-child td:nth-child(2)")
-                return td ? td.textContent?.trim() : null;
-            })
-
-            const data_caixa = format(caixa.data_caixa, 'dd/MM/yyyy')
-            if (dataNaTabela !== data_caixa) {
-                // Datas não bateram...
-                throw new Error(`A Data ${data_caixa} na planilha, não bateu com a Data Caixa ${dataNaTabela} no Datasys.`)
+                resolve();
+                return;
+            } catch (error) {
+                tentativas--;
+                erro = error.message;
             }
-
-            resolve()
-        } catch (error) {
-            reject(error)
         }
+
+        reject(erro)
     })
 }
 
 function realizarDeposito({ page, caixa }) {
     return new Promise(async (resolve, reject) => {
         try {
-            const btnAbrir = await page.waitForSelector('table tbody tr:first-child a', { visible: true , timeout: 0});
+            const btnAbrir = await page.waitForSelector('table tbody tr:first-child a', { visible: true, timeout: cincoMinutos });
             btnAbrir.click()
             await delay(300)
             // Selecionar a conta
@@ -172,6 +170,7 @@ function realizarDeposito({ page, caixa }) {
             if (!id_conta) {
                 throw new Error('id_conta não informado!')
             }
+            await page.waitForSelector('.select2.select2-offscreen', { timeout: cincoMinutos })
             await page.select('.select2.select2-offscreen', id_conta)
 
             const valor_deposito = parseFloat(caixa.deposito).toFixed(2).replace('.', ',')
@@ -181,7 +180,7 @@ function realizarDeposito({ page, caixa }) {
             if (!caixa.data_deposito) {
                 throw new Error('data_deposito não informada!')
             }
-            if(!caixa.documento){
+            if (!caixa.documento) {
                 throw new Error('documento não informado!')
             }
             const documento = `${caixa.documento}`
@@ -198,16 +197,25 @@ function realizarDeposito({ page, caixa }) {
             }
 
             await page.click('#ctl00_body_wucConfirmacaoDeposito_lkIncluirDeposito')
-            await delay(300)
+            await delay(1500)
             // Aguardar o depósito ser adicionado à lista
-            await page.waitForSelector('.inProgress', { hidden: true , timeout: 0})
+            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
             // Clicar em Confirmar
             await page.click('#ctl00_body_wucConfirmacaoDeposito_lkSalvar')
+            await delay(1000)
 
-            await page.waitForSelector('.inProgress', { hidden: true , timeout: 0})
+            if(valor_deposito === '0,00'){
+                const btnConfirmar = await page.waitForSelector('#ctl00_body_wucConfirmacaoDeposito_lkConfirmarDepositoZerado', { visible: true, timeout: 1000 })
+                if(btnConfirmar){
+                    await btnConfirmar.click()
+                }
+            }
+            await delay(300);
 
-            // await page.waitForSelector('.modal-content', { visible: true , timeout: 0});
-            
+            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
+
+            // await page.waitForSelector('.modal-content', { visible: true , timeout: cincoMinutos});
+
 
             await delay(100)
             resolve()
@@ -222,16 +230,17 @@ function confirmarCaixa({
 }) {
     return new Promise(async (resolve, reject) => {
         try {
-            const btnAbrir = await page.waitForSelector('a[data-original-title="Abrir"]', { visible: true , timeout: 0})
+            const btnAbrir = await page.waitForSelector('a[data-original-title="Abrir"]', { visible: true, timeout: cincoMinutos })
             await btnAbrir.click()
-            await delay(100)
-            await page.waitForSelector('.inProgress2', { hidden: true , timeout: 0})
+            await delay(200)
+            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
 
-            const btnConfirmar = await page.waitForSelector('#ctl00_body_lkSalvar', { visible: true , timeout: 0})
+            const btnConfirmar = await page.waitForSelector('#ctl00_body_lkSalvar', { visible: true, timeout: cincoMinutos })
             await btnConfirmar.click()
-            await page.waitForSelector('.inProgress', { hidden: true , timeout: 0})
-
-            // await page.waitForSelector('.modal-content', { visible: true , timeout: 0});
+            await delay(2000)
+            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
+            await delay(300)
+            // await page.waitForSelector('.modal-content', { visible: true , timeout: cincoMinutos});
 
             resolve()
         } catch (error) {

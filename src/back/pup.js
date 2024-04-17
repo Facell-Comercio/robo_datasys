@@ -9,7 +9,7 @@ export const pupInit = async function () {
                     '--start-maximized',
                 ],
             })
-            await page.setViewport({ width: 1200, height: 600 })
+            await page.setViewport({ width: 1200, height: 700 })
             resolve({page, browser})
         } catch (error) {
             console.log('ERRO_PUP_INIT', error)
