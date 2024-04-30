@@ -7,59 +7,128 @@
 
     <link rel="stylesheet" href="./css/bootstrap/css/bootstrap.min.css" />
   </head>
-  <body class="bg-dark text-secondary overflow-hidden" style="max-height: 100vh; height: 100%;">
-    <!-- Div principal -->
-    <div class="d-flex">
-      <!-- Primeira coluna -->
-      <div class="d-flex flex-column gap-2 p-3">
-        <label for="">Credenciais Datasys</label>
-        <!-- CPF -->
-        <div class="input-group">
-          <span class="input-group-text">CPF</span>
-          <input id="cpf" type="text" class="form-control form-control-sm" placeholder="00000000000" aria-label="cpf" aria-describedby="basic-addon1" />
+  <body class="bg-dark text-secondary overflow-hidden" style="max-height: 100vh; height: 100%">
+    <!-- Credenciais -->
+    <div class="accordion bg-dark" id="accordionCredentials">
+      <div class="accordion-item rounded-0 bg-dark">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-secondary rounded-0 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCredentials" aria-expanded="false" aria-controls="collapseCredentials">
+            Credenciais do Datasys
+          </button>
+        </h2>
+        <div id="collapseCredentials" class="accordion-collapse collapse rounded-0" data-bs-parent="#accordionCredentials">
+          <div class="accordion-body">
+            <div class="d-flex gap-3">
+              <!-- CPF -->
+              <div class="form-group">
+                <span class="form-label text-light">CPF</span>
+                <input id="cpf" type="text" class="form-control form-control-sm" placeholder="00000000000" aria-label="cpf" aria-describedby="basic-addon1" />
+              </div>
+      
+              <!-- SENHA -->
+              <div  class="form-group">
+                <span class="form-label text-light">Senha</span>
+                <input id="senha" type="password" class="form-control form-control-sm" placeholder="senha" aria-label="senha" aria-describedby="basic-addon1" />
+              </div>
+      
+              <!-- EMPRESA -->
+              <div  class="form-group">
+                <span class="form-label text-light">Empresa</span>
+                <select id="empresa" class="form-select form-select-sm">
+                  <option value="FACELLRN">FACELLRN</option>
+                  <option value="FORTTELECOM">FORTTELECOM</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <!-- SENHA -->
-        <div class="input-group">
-          <span class="input-group-text">Senha</span>
-          <input id="senha" type="password" class="form-control form-control-sm" placeholder="senha" aria-label="senha" aria-describedby="basic-addon1" />
-        </div>
-
-        <!-- EMPRESA -->
-        <div class="input-group">
-          <span class="input-group-text">Empresa</span>
-          <select id="empresa" class="form-select form-select-sm">
-              <option value="FACELLRN">FACELLRN</option>
-              <option value="FORTTELECOM">FORTTELECOM</option>
-          </select>
-        </div>
-
-        <div class="d-flex flex-column mt-3">
-          <a target="_blank" href="https://docs.google.com/uc?export=download&id=1kSK7gSlS9hoVaiiK5DxYgkt-3XLTTeCE">Planilha padrão</a>
-          <span id="infoQtdeCaixas" class="fw-bold text-white"></span>
-        </div>
-
-        <button id="btnImportar" class="btn btn-warning">Importar Planilha</button>
-
-        <button id="btnResetar" class="d-none w-full btn btn-secondary">Resetar</button>
-        <button id="btnIniciar" class="d-none w-full btn btn-primary">Iniciar</button>
-        <button id="btnFinalizar" class="d-none btn btn-danger">Finalizar</button>
-        <button id="btnExportar" class="d-none btn btn-success">Exportar Resultado</button>
       </div>
+    </div> 
 
-      <!-- Segunda coluna -->
-      <div class="p-3 d-flex flex-column w-75 gap-3">
-        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuemax="100">
-            <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold"></div>
+    <style>
+      .nav-link.active{
+        background-color: var(--bs-primary) !important;
+      } 
+    </style>
+    </style>
+    <!-- Navegação -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#confirma-caixa-tab">Confirmação de caixas</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#importa-orcamento-tab">Importação de Orçamento</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="confirma-caixa-tab" class="tab-pane fade show active">
+        <!-- Confirmação de Caixa -->
+        <div class="d-flex">
+          <!-- Primeira coluna -->
+          <div class="d-flex flex-column gap-2 p-3">
+            <div class="d-flex flex-column mt-3">
+              <a target="_blank" href="https://docs.google.com/uc?export=download&id=1kSK7gSlS9hoVaiiK5DxYgkt-3XLTTeCE" class="btn btn-success">Planilha padrão</a>
+              <span id="infoQtdeCaixas" class="fw-bold text-white"></span>
+            </div>
+
+            <button id="btnImportar" class="btn btn-warning">Importar Caixas</button>
+
+            <button id="btnResetar" class="d-none w-full btn btn-secondary">Resetar</button>
+            <button id="btnIniciar" class="d-none w-full btn btn-primary">Iniciar</button>
+            <button id="btnFinalizar" class="d-none btn btn-danger">Finalizar</button>
+            <button id="btnExportar" class="d-none btn btn-success">Exportar Resultado</button>
           </div>
 
-        <div class="flex-1">
-            <div class="fs-6">
-                Histórico
+          <!-- Segunda coluna -->
+          <div class="p-3 d-flex flex-column w-75 gap-3">
+            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuemax="100">
+              <div class="caixas-progress-bar progress-bar progress-bar-striped progress-bar-animated fw-bold"></div>
             </div>
-            <div id="historico" class="overflow-auto flex-1 flex flex-column gap-1 p-2" style="height: 80vh; background-color: #151719;"></div>
-        </div>
 
+            <div class="flex-1 d-flex flex-column">
+              <div class="fs-6">Histórico</div>
+              <div id="historico" class="overflow-auto flex-fill flex-1 flex flex-column gap-1 p-2" style="max-height: 70vh; background-color: #151719"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="importa-orcamento-tab" class="tab-pane fade">
+        <!-- Importação Orçamento -->
+        <div class="d-flex">
+          <!-- Primeira coluna -->
+          <div class="d-flex flex-column gap-2 p-3">
+            <div class="d-flex flex-column gap-2 mt-3">
+              <a target="_blank" href="https://docs.google.com/uc?export=download&id=1mhYKDL8Tyrv0G3RABiw-b33Qtn3gfFqM" class="btn btn-success">Planilha padrão</a>
+              <span id="orca_infoQtde" class="fw-bold text-white"></span>
+              
+              <button id="orca_btnImportar" class="btn btn-warning">Importar Orçamento</button>
+              <div class="form-group">
+                <label class="form-label">Ano do orçamento</label>
+                <input id="orca_ano" class="form-control" type="text" placeholder="0000"/>
+              </div>
+            </div>
+
+
+            <button id="orca_btnResetar" class="d-none w-full btn btn-secondary">Resetar</button>
+            <button id="orca_btnIniciar" class="d-none w-full btn btn-primary">Iniciar</button>
+            <button id="orca_btnFinalizar" class="d-none btn btn-danger">Finalizar</button>
+            <button id="orca_btnExportar" class="d-none btn btn-success">Exportar Resultado</button>
+          </div>
+
+          <!-- Segunda coluna -->
+          <div class="p-3 d-flex flex-column w-75 gap-3">
+            <div class="orca_progress progress" role="progressbar" aria-label="Animated striped example" aria-valuemax="100">
+              <div class="orca-progress-bar progress-bar progress-bar-striped progress-bar-animated fw-bold"></div>
+            </div>
+
+            <div class="flex-1 d-flex flex-column flex-fill">
+              <div class="fs-6">Histórico</div>
+              <div id="orca_historico" class="overflow-auto flex-fill flex-1 flex flex-column gap-1 p-2" style="max-height: 70vh; background-color: #151719"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

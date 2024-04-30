@@ -5,7 +5,9 @@ export const login = async (page, credentials) => {
     return new Promise(async (resolve, reject) => {
         try {
             await page.goto('https://tim.datasys.online', { waitUntil: 'domcontentloaded' }).catch(e => { })
+            await delay(2000)
 
+            await page.waitForSelector('#edLogin', {timeout: 1000 * 30 })
             await page.evaluate(async (data) => {
                 const credentials = data.credentials
                 const delay = (ms) => {
@@ -35,10 +37,12 @@ export const login = async (page, credentials) => {
                 identificacaoInput.dispatchEvent(event);
                 identificacaoInput.dispatchEvent(eventChange);
 
+                
             }, { credentials })
-
-            await delay(1000)
-            await page.click('[name="btAcessar"]')
+            
+            await page.waitForSelector('#divModuloLoja', {timeout: 1000 * 60 * 5} )
+            // await delay(1000)
+            // await page.click('[name="btAcessar"]')
 
             ipcMain.emit('state', { login: true })
             resolve()

@@ -37,7 +37,7 @@ export const baixarCaixas = ({
                             type: 'question',
                             buttons: ['Confirmar'],
                             title: 'CAIXA MANUAL',
-                            message: `Por favor, finalize a confirmação desse caixa e só depois clique aqui para Confirmar para que eu continue os próximos.`
+                            message: `Por favor, finalize a confirmação desse caixa '${caixa.filial}: ${format(caixa.data_caixa, 'dd/MM/yyyy')}' e só depois clique aqui para Confirmar para que eu continue os próximos.`
                         });
                         resolve(response)
                     })
@@ -212,7 +212,7 @@ function realizarDeposito({ page, caixa }) {
             }
             await delay(300);
 
-            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
+            await page.waitForSelector('.inProgress2', { hidden: true, timeout: cincoMinutos })
 
             // await page.waitForSelector('.modal-content', { visible: true , timeout: cincoMinutos});
 
@@ -233,13 +233,14 @@ function confirmarCaixa({
             const btnAbrir = await page.waitForSelector('a[data-original-title="Abrir"]', { visible: true, timeout: cincoMinutos })
             await btnAbrir.click()
             await delay(200)
-            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
+            await page.waitForSelector('.inProgress2', { hidden: true, timeout: cincoMinutos })
 
             const btnConfirmar = await page.waitForSelector('#ctl00_body_lkSalvar', { visible: true, timeout: cincoMinutos })
             await btnConfirmar.click()
             await delay(2000)
-            await page.waitForSelector('.inProgress', { hidden: true, timeout: cincoMinutos })
-            await delay(300)
+            await page.waitForSelector('.inProgress2', { hidden: true, timeout: cincoMinutos })
+            await delay(2000)
+            
             // await page.waitForSelector('.modal-content', { visible: true , timeout: cincoMinutos});
 
             resolve()
